@@ -1,44 +1,37 @@
 let selectedSquare = null;
 let legalMoves = [];
-let currentTurn = 'white'; // 'white' or 'black'
+let currentTurn = 'white';
 let gameOver = false;
-
 let board = null;
 let turnDisplay = null;
 
-// Ensure DOM is fully loaded before initializing
 document.addEventListener('DOMContentLoaded', () => {
     board = document.querySelector('table');
     turnDisplay = document.getElementById('turn_display');
 
-    // Attach click listener to reset button if present
     const setB = document.getElementById("set_board");
     if (setB) {
         setB.addEventListener('click', setBoard);
     }
 
-    // Populate initial board state
     setBoard();
 
-    // Main click listener using event delegation
     if (board) {
         board.addEventListener('click', handleBoardClick);
     }
 });
 
 function handleBoardClick(event) {
-    if (gameOver) return; // Ignore all clicks once the game has ended
+    if (gameOver) return; 
 
     const square = event.target.closest('td');
 
-    // Ignore clicks outside valid board cells or on labels/status cells
     if (!square || square.classList.contains('horz-labels') || square.classList.contains('vert-labels') || square.classList.contains('status-cell')) {
         return;
     }
 
     const clickedPiece = square.querySelector('img');
 
-    // CASE 1: Move to target square if it is in legal moves list
     if (selectedSquare && legalMoves.includes(square.id)) {
         movePiece(selectedSquare, square);
         clearHighlights();
@@ -48,9 +41,7 @@ function handleBoardClick(event) {
         return;
     }
 
-    // CASE 2: Select a piece belonging to the active player
     if (clickedPiece && isPieceTurn(clickedPiece)) {
-        // Deselect if clicking the same piece twice
         if (selectedSquare === square) {
             clearHighlights();
             return;
@@ -60,7 +51,6 @@ function handleBoardClick(event) {
         selectedSquare = square;
         square.classList.add('selected');
 
-        // Calculate and highlight legal moves
         legalMoves = calculateLegalMoves(square);
         legalMoves.forEach(squareId => {
             const targetCell = document.getElementById(squareId);
@@ -69,22 +59,18 @@ function handleBoardClick(event) {
         return;
     }
 
-    // CASE 3: Clicked invalid cell -> clear selection
     clearHighlights();
 }
 
 function setBoard() {
-    // 1. Clear existing board pieces
     const cells = document.querySelectorAll('.white-box, .black-box');
     cells.forEach(cell => cell.innerHTML = '');
 
-    // 2. Reset turn, selections, and game-over state
     clearHighlights();
     currentTurn = 'white';
     gameOver = false;
     if (turnDisplay) turnDisplay.textContent = "It's White's Turn";
 
-    // 3. Define starting position layout
     const initialBoard = {
         // Row 8 - Black Major
         a8: 'b_rook', b8: 'b_knight', c8: 'b_bishop', d8: 'b_queen',
@@ -100,7 +86,6 @@ function setBoard() {
         e1: 'w_king', f1: 'w_bishop', g1: 'w_knight', h1: 'w_rook'
     };
 
-    // 4. Populate board dynamically
     for (const [squareId, pieceCode] of Object.entries(initialBoard)) {
         const square = document.getElementById(squareId);
         if (square) {
@@ -111,7 +96,7 @@ function setBoard() {
 
             img.src = `pieces/${fullName}.png`;
             img.alt = fullName;
-            img.id = `${pieceCode}_${squareId}`; // e.g., 'w_pawn_a2'
+            img.id = `${pieceCode}_${squareId}`; 
             square.appendChild(img);
         }
     }
@@ -119,9 +104,8 @@ function setBoard() {
 
 function movePiece(fromSquare, toSquare) {
     const piece = fromSquare.querySelector('img');
-    const capturedPiece = toSquare.querySelector('img'); // Check before clearing the target square
+    const capturedPiece = toSquare.querySelector('img');
 
-    // If we're capturing a king, the game ends immediately
     if (capturedPiece && capturedPiece.id.includes('king')) {
         const winner = capturedPiece.id.startsWith('w_') ? 'black' : 'white';
         toSquare.innerHTML = '';
@@ -130,7 +114,7 @@ function movePiece(fromSquare, toSquare) {
         return;
     }
 
-    toSquare.innerHTML = ''; // Clear target square contents (capture piece)
+    toSquare.innerHTML = ''; 
     toSquare.appendChild(piece);
 }
 
@@ -163,15 +147,13 @@ function switchTurn() {
     }
 }
 
-// --- LEGAL MOVE CALCULATIONS ---
-
 function calculateLegalMoves(square) {
     const piece = square.querySelector('img');
     if (!piece) return [];
 
-    const file = square.id[0]; // 'a' to 'h'
-    const rank = parseInt(square.id[1]); // 1 to 8
-    const pieceType = piece.id.split('_')[1]; // 'pawn', 'rook', 'knight', etc.
+    const file = square.id[0]; 
+    const rank = parseInt(square.id[1]); 
+    const pieceType = piece.id.split('_')[1]; 
     const color = piece.id.startsWith('w_') ? 'white' : 'black';
 
     let moves = [];
@@ -181,18 +163,15 @@ function calculateLegalMoves(square) {
             const dir = color === 'white' ? 1 : -1;
             const startRank = color === 'white' ? 2 : 7;
 
-            // 1 square forward
             const forwardId = `${file}${rank + dir}`;
             if (isEmpty(forwardId)) {
                 moves.push(forwardId);
-                // 2 squares forward from starting rank
                 const doubleForwardId = `${file}${rank + (2 * dir)}`;
                 if (rank === startRank && isEmpty(doubleForwardId)) {
                     moves.push(doubleForwardId);
                 }
             }
 
-            // Diagonal captures
             const captureFiles = [String.fromCharCode(file.charCodeAt(0) - 1), String.fromCharCode(file.charCodeAt(0) + 1)];
             captureFiles.forEach(f => {
                 const targetId = `${f}${rank + dir}`;
