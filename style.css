@@ -1,21 +1,26 @@
+body {
+    background-color: #44df6e;
+    margin: 50px;
+}
+
 table {
     border-collapse: collapse;
     margin: auto;
 }
 
 td {
-    border: solid black 2px;
+    border: solid #21023d 2px;
     width: 80px;
     height: 80px;
     text-align: center;
 }
 
 .black-box {
-    background-color: #242424;
+    background-color: #B58763;
 }
 
 .white-box {
-    background-color: #ededed;
+    background-color: #F2D9B4;
 }
 
 td.horz-labels {
@@ -23,6 +28,8 @@ td.horz-labels {
     text-align: center;
     height: 40px;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 30px;
+    color: #21023d;
 }
 
 td.vert-labels {
@@ -30,4 +37,30 @@ td.vert-labels {
     text-align: center;
     width: 40px;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 30px;
+    color: #21023d;
+}
+
+button {
+    display: block;         /* Allows margin: auto to center the button */
+    margin: 20px auto;      /* Centers horizontally and adds 20px space above/below */
+    padding: 10px 20px;     /* Comfortable internal spacing (Top/Bottom Right/Left) */
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 680px;
+}
+
+button:hover {
+    background-color: aquamarine;
+}
+
+button:active {
+    background-color: cornflowerblue;
+}
+
+img {
+    width: 65px;
+    height: 65px;
 }
